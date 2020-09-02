@@ -8,7 +8,7 @@ module.exports = (app) => {
             require('../views/base/home/home.marko')
         );
     });
-    
+
     app.get('/livros', function(req, resp) {
 
         const livroDao = new LivroDao(db);
@@ -41,8 +41,8 @@ module.exports = (app) => {
     });
 
     app.post('/livros',[
-        check('titulo').isLength({ min: 5 }),
-        check('preco').isCurrency()
+        check('titulo').isLength({ min: 5 }).withMessage('O título precisa ter no mínimo 5 caracteres!'),
+        check('preco').isCurrency().withMessage('O preço precisa ter um valor monetário válido!')
     ],
     function(req, resp) {
         console.log(req.body);
@@ -50,7 +50,11 @@ module.exports = (app) => {
         const errors = validationResult(req);
 
         if (!errors.isEmpty()) {
-            return resp.marko(require('../views/livros/form/form.marko'),{livro:{}});
+            return resp.marko(require('../views/livros/form/form.marko'),
+            {
+                livro: {},
+                errosValidacao: errors.array()
+            });
         } else {
             livroDao.adiciona(req.body)
                     .then(resp.redirect('/livros'))
@@ -61,7 +65,7 @@ module.exports = (app) => {
     app.put('/livros', function(req, resp) {
         console.log(req.body);
         const livroDao = new LivroDao(db);
-        
+
         livroDao.atualiza(req.body)
                 .then(resp.redirect('/livros'))
                 .catch(erro => console.log(erro));
