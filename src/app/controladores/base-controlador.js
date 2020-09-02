@@ -1,18 +1,20 @@
+const templates = require('../views/templates');
+
 class BaseControlador {
 
-  static rotas() {
-    return {
-      home: '/'
+    static rotas() {
+        return {
+            home: '/'
+        };
     }
-  }
 
-  home() {
-    return (req, resp) => {
-      resp.marko(
-        require('../views/base/home/home.marko')
-      );
+    home() {
+        return function(req, resp) {
+            resp.marko(
+                templates.base.home
+            );
+        };
     }
-  }
 }
 
 module.exports = BaseControlador;
